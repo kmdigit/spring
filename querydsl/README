@@ -1,0 +1,12 @@
+# Querydsl
+
+### 기본 설정
+
+프로젝트 생성 및 초기 설정
+
+1. [start.spring.io](https://start.spring.io/) 에서 통해 프로젝트 생성
+2. 의존성 추가
+   * Spring Web
+   * Spring Data JPA
+   * H2 Database
+   * Lombok
