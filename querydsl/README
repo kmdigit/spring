@@ -1,6 +1,6 @@
 # Querydsl
 
-### 기본 설정
+## 기본 설정
 
 프로젝트 생성 및 초기 설정
 
@@ -57,6 +57,7 @@
             hibernate:
               # show_sql: true
               format_sql: true
+              use_sql_comments: true # JPQL 출력
      
       logging.level:
         org.hibernate.SQL: debug
@@ -69,3 +70,63 @@
       }
       ```
       * [p6spy 버전 확인](https://github.com/gavlyukovskiy/spring-boot-data-source-decorator)
+    
+## 기본 Q-Type 활용
+
+### Q클래스 인스턴스를 사용하는 2가지 방법
+
+```java
+QMember member = new QMember("m");
+QMember member = QMember.member;
+```
+* QMember 생성자의 파라미터는 JPQL의 테이블 Alias로 같은 테이블 조인 시 이름이 같을 수 있으므로 Alias를 변경해야 하는 상황에 사용
+
+### 검색 조건 쿼리
+
+```java
+eq : equals
+ne : not equals
+eq().not() : not equals
+        
+isNotNull
+        
+in : in(10, 20)
+notIn : 
+between
+        
+goe
+gt
+loe
+lt
+        
+like
+contains
+startsWith
+```
+
+### AND 조건
+
+```java
+@Test
+public void searchAndParam() {
+    List<Member> result1 = queryFactory
+        .selectFrom(member)
+        .where(member.username.eq("member1"),
+            member.age.eq(10))
+        .fetch();
+    assertThat(result1.size()).isEqualTo(1);
+}
+```
+
+* 이 경우 null 값은 무시 -> 메서드 추출을 활용해서 동적 쿼리를 깔끔하게 만들 수 있음
+
+### 결과 조회
+
+* fetch() : 리스트 조회, 데이터 없으면 빈 리스트 반환
+* fetchOne() : 단 건 조회
+    * 결과가 없으면 : null
+    * 결과가 둘 이상이면 : com.querydsl.core.NonUniqueResultException
+* fetchFirst() : limit(1).fetchOne()
+* fetchResults() : 페이징 정보 포함, total count 쿼리 추가 실행
+* fetchCount() : count 쿼리로 변경해서 count 수 조회
+
